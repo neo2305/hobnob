@@ -28,11 +28,6 @@ const Home = () => {
           className="self-stretch h-14 flex flex-col items-start justify-start py-4 pr-2 pl-0 box-border gap-[16px] max-w-full cursor-pointer z-[7] text-base text-black"
           onClick={onFrameContainer1Click}
         >
-          <div className="w-[559.9px] flex flex-row items-start justify-start py-0 pr-[60px] pl-[60.5px] box-border max-w-full shrink-0 mq750:pl-[30px] mq750:pr-[30px] mq750:box-border">
-            <div className="flex-1 relative leading-[24px] inline-block max-w-full">
-              Community One
-            </div>
-          </div>
           <img
             className="self-stretch relative max-w-full overflow-hidden max-h-full shrink-0"
             loading="lazy"
@@ -42,7 +37,7 @@ const Home = () => {
         </div>
         <div className="w-[1601px] overflow-x-auto flex flex-col items-start justify-start py-0 pr-2 pl-0 box-border gap-[47px] max-w-full mq750:gap-[23px]">
           <FrameComponent1 />
-          <FrameComponent />
+          {/* <FrameComponent /> */}
           <img
             className="w-[1593px] h-px relative z-[2]"
             alt=""
