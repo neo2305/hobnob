@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>Chat Room</title>
+    <meta name="description" content="">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <style>
+      body{
+        background-color: rgb(25, 32, 54);;
+      }
+      #messageForm{
+        position: absolute;
+        bottom:5%;
+      }
+      #messageArea{
+        
+        position: absolute;
+        bottom: 10%;
+      }
+      .buttonContainer input[type="submit"].selected {
+          background-color: aqua;
+          color: black;
+      }
+      #comtab{
+        position: absolute;
+        left: 0%;
+        right: 75%;
+        border-right-width: 10px;
+        border-color: aliceblue;
+        height: 100%;
+        width: 25%;
+        /* padding-right: 12px; */
+      }
+      
+      .ChatWindow{
+        height: 100%;
+        left: 25%;
+        border-left: 2px;
+        border-bottom: 0cm;
+        border-right: 0cm;
+        border-top: 0cm;
+        border-left-width: 10px;
+        border-color: aliceblue;
+        border-style: groove;
+        bottom: 0%;
+        position: absolute;
+        right:0px;
+        width: 70%;
+        padding-left: 12px;
+
+      }
+      .buttonContainer input {
+      position: relative;
+      flex-grow: 1;
+      width: 100%;
+      height: 15%;
+      /* margin: 5px; */
+      padding: 10px;
+      border: #04AA6D;
+      background-color: rgb(25, 32, 54) ;
+      border-bottom: 2px solid white; 
+      color: white;
+      
+      text-align: center;
+      text-decoration: none;
+      display: inline-block;
+      font-size: 16px;
+      cursor: pointer;
+    }
+      .buttoncontainer{
+        background-color: #04AA6D; /* Green */
+        border: none;
+        color: white;
+        padding: 15px 32px;
+        text-align: center;
+        text-decoration: none;
+        display: inline-block;
+        font-size: 16px;
+      }
+      .textmsg{
+        color: white;
+      }
+      .view{
+        position: absolute;
+    top: 10%; /* Leave 10% space from the top */
+    left: 0;
+    width: 100%;
+    height: 90%; /* Take up 90% of the viewport height */
+          }
+    </style>
+</head>
+<body>
+  <div class="view">
+    <section id="comtab">
+      <div class="buttonContainer" id="buttonContainer"></div>
+    </section>
+  <aside class="ChatWindow">
+    
+    <div id="messageArea"></div>
+    <form id="messageForm">
+      <input type="text" id="messageInput" placeholder="Type your message...">
+      <button type="submit">Send</button>
+    </form>
+    
+  </aside>
+  <!-- Include Socket.IO library -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.1/socket.io.js"></script>
+  <script>
+    // Establish WebSocket connection with server
+    const socket = io();
+    
+    // Get reference to HTML elements
+    const messageArea = document.getElementById('messageArea');
+    const messageForm = document.getElementById('messageForm');
+    const messageInput = document.getElementById('messageInput');
+    
+    // Event listener for form submission
+    messageForm.addEventListener('submit', (event) => {
+      event.preventDefault();
+      const message = messageInput.value.trim();
+      if (message !== '') {
+        // Emit 'message' event to server with message and username
+        socket.emit('message', { username: getUsername(), message });
+        
+        // Clear input field
+        messageInput.value = '';
+      }
+    });
+      socket.on('message', (data) => {
+      // Append the new message to the message area
+      messageArea.innerHTML += `<p style="color:white;"><strong>${data.username}:</strong> ${data.message}</p>`;
+      
+      // Scroll to bottom of message area
+      messageArea.scrollTop = messageArea.scrollHeight;
+      });
+    
+    // Event listener for 'initialMessages' event from server
+    socket.on('initialMessages', (messages) => {
+      // Display initial chat messages in chat area
+      messages.forEach((message) => {
+        messageArea.innerHTML += `<p style="color:white;"><strong>${message.username}:</strong> ${message.message}</p>`;
+      });
+      
+      // Scroll to bottom of chat area
+      messageArea.scrollTop = messageArea.scrollHeight;
+    });
+
+    socket.on('comList', (comList) => {
+      console.log('Received comList from server:', comList);
+      // Clear existing buttons
+      buttonContainer.innerHTML = '';
+      // Loop through the list of communities
+      comList.forEach((value) => {
+        // Create a button element for each community
+        const button = document.createElement('input');
+        // Set the button text to the value
+        button.type='submit'
+        button.value= value;
+        button.addEventListener('click', () => {
+                // Remove 'selected' class from all buttons
+                document.querySelectorAll('.buttonContainer input').forEach(btn => {
+                    btn.classList.remove('selected');
+                });
+                // Add 'selected' class to the clicked button
+                button.classList.add('selected');
+            });
+            // Append the button to the button container
+            buttonContainer.appendChild(button);
+      });
+    });
+
+    
+    // Function to get username from local storage or prompt user to enter username
+    function getUsername() {
+      let username = localStorage.getItem('username');
+      if (!username) {
+        username = prompt('Enter your username:');
+        localStorage.setItem('username', username);
+      }
+      return username;
+    }
+    // Emit 'getCom' event to server to request the list of communities
+    document.addEventListener('DOMContentLoaded', () => {
+      socket.emit('getCom');
+    });
+  
+    </script>
+</div>
+</body>
+</html>
