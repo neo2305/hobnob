@@ -24,4 +24,21 @@ async function createthread(username,message_text){
     const result = await text.save()
     console.log(result)
 }
-createthread()
+
+async function getThreads(username, Comm_id) {
+    const threads = await Threads.find({ Community_id: Comm_id });
+    return threads;
+}
+
+async function main() {
+    try {
+        // Call the getThreads function
+        const threads = await getThreads(null, 2); // Assuming null for username
+        console.log(threads);
+    } catch (error) {
+        console.error('Error:', error);
+    }
+}
+
+// Call the main function to start the execution
+main();
