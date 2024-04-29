@@ -30,15 +30,19 @@ async function getThreads(username, Comm_id) {
     return threads;
 }
 
-async function main() {
-    try {
-        // Call the getThreads function
-        const threads = await getThreads(null, 2); // Assuming null for username
-        console.log(threads);
-    } catch (error) {
-        console.error('Error:', error);
-    }
-}
 
-// Call the main function to start the execution
-main();
+module.exports = {
+    getThreads: getThreads
+};
+
+// const { getThreads } = require('./module');
+
+// getThreads(null, 2)
+//     .then(threads => {
+//         console.log(threads);
+//     })
+//     .catch(error => {
+//         console.error('Error:', error);
+//     });
+
+//  Base Code to call the function in other file
