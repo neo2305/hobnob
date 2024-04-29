@@ -1,6 +1,7 @@
 import { useCallback } from "react";
 import  Button1  from "@mui/material/Button";
 import { useNavigate } from "react-router-dom";
+import React, { useState } from 'react';
 
 const Button = () => {
   const navigate = useNavigate();
@@ -12,6 +13,9 @@ const Button = () => {
   const onSignUpTextClick = useCallback(() => {
     navigate("/signup");
   }, [navigate]);
+
+  const [username, setUsername] = useState('');
+  const [password, setPassword] = useState('');
 
   return (
     <div className="w-[345px] shadow-[0px_8px_10px_-6px_rgba(0,_0,_0,_0.1),_0px_20px_25px_-5px_rgba(0,_0,_0,_0.1),_0px_0px_0px_#000,_0px_0px_0px_#000] rounded-lg bg-white overflow-hidden shrink-0 flex flex-col items-start justify-start pt-[11px] px-[34px] pb-8 box-border gap-[16px] max-w-full text-center text-5xl text-black font-roboto mq750:pt-5 mq750:pb-[21px] mq750:box-border">
@@ -33,24 +37,36 @@ const Button = () => {
       <div className="self-stretch flex flex-row items-start justify-start pt-0 px-0 pb-[7px]">
         <form
           className="m-0 h-[263px] flex-1 flex flex-col items-start justify-start pt-0 px-0 pb-[63px] box-border gap-[24px] cursor-pointer"
-          onClick={onAdanPradhanClick}
+          // onClick={onAdanPradhanClick}
         >
           <div className="self-stretch flex flex-col items-start justify-start gap-[4px]">
             <b className="relative text-sm leading-[20px] inline-block font-roboto text-dimgray text-left min-w-[71.2px]">
               Username
             </b>
+            {/* <input
+              className="[outline:none] bg-white self-stretch h-[42px] relative rounded box-border min-w-[166px] border-[1px] border-solid border-lightgray"
+              type="text"
+            /> */}
             <input
               className="[outline:none] bg-white self-stretch h-[42px] relative rounded box-border min-w-[166px] border-[1px] border-solid border-lightgray"
               type="text"
+              value={username}
+              onChange={(e) => setUsername(e.target.value)}
             />
           </div>
           <div className="self-stretch flex flex-col items-start justify-start gap-[4px]">
             <b className="relative text-sm leading-[20px] inline-block font-roboto text-dimgray text-left min-w-[66.8px]">
               Password
             </b>
-            <input
+            {/* <input
               className="[outline:none] bg-white self-stretch h-[42px] relative rounded box-border min-w-[166px] border-[1px] border-solid border-lightgray"
               type="text"
+            /> */}
+            <input
+              className="[outline:none] bg-white self-stretch h-[42px] relative rounded box-border min-w-[166px] border-[1px] border-solid border-lightgray"
+              type="password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
             />
           </div>
           <div className="self-stretch flex flex-row items-start justify-end py-0 px-0">
@@ -71,6 +87,7 @@ const Button = () => {
               "&:hover": { background: "#2563eb" },
               height: 40,
             }}
+            onClick={onAdanPradhanClick}
           >
             Sign In
           </Button1>
