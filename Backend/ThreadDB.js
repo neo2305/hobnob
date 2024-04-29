@@ -32,7 +32,8 @@ async function getThreads(username, Comm_id) {
 
 
 module.exports = {
-    getThreads: getThreads
+    getThreads: getThreads,
+    createthread : createthread
 };
 
 // const { getThreads } = require('./module');
