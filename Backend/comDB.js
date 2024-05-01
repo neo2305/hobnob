@@ -26,12 +26,15 @@ async function createcom(username,message_text){
 }
 
 async function getcom(){
-    // const courses = await Course.find({rating : {$gte:3}}).select({name : 1,publishDate: 1}).sort({name:1})
-    const comms = await Communitites.find({},'Community_name')
-    const communityNames = comms.map(community => community.Community_name);
-    return communityNames
+    const comms = await Communitites.find({}, 'Community_name Community_id');
+    const communityData = comms.map(community => ({
+        name: community.Community_name,
+        id: community.Community_id
+    }));
+    return communityData;
 }
-getcom()
+
+getcom();
 module.exports={
     createcom : createcom,
     getcom : getcom

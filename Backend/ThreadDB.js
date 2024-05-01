@@ -15,22 +15,22 @@ const threadSchema = new mongoose.Schema({
 const Threads = mongoose.model('Threads' ,threadSchema)
 async function createthread(username,message_text){
     const text = new Threads({
-        thread_id : 1,
+        thread_id : 6,
         Community_id : 3,
         Title : "Test Thread_31",
-        Created_by : "Akhil",
+        Created_by : "hehe",
     });
 
     const result = await text.save()
     console.log(result)
 }
 
-async function getThreads(username, Comm_id) {
-    const threads = await Threads.find({ Community_id: Comm_id });
+async function getThreads(comid) {
+    const threads = await Threads.find({ Community_id: comid });
+    // console.log(threads)
     return threads;
 }
-
-
+// createthread()
 module.exports = {
     getThreads: getThreads,
     createthread : createthread

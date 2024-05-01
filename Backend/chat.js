@@ -3,12 +3,14 @@ const http = require('http');
 const socketio = require('socket.io');
 const db = require('./ChatBase')
 const app = express();
+const threaddb = require('./ThreadDB')
 const server = http.createServer(app);
 const io = socketio(server);
 const comDB = require('./comDB');
 
 // Array to store chat messages
-let messages = [];
+
+let messages = []
 
 // Middleware to parse JSON bodies
 app.use(express.json());
@@ -53,6 +55,20 @@ io.on('connection', (socket) => {
       // Emit an error event or send an appropriate response to the client
     }
   });
+
+  socket.on('getThreads', async (data) => {
+    try {
+        // Call the getThreads function with the selected community name
+        const threads = await threaddb.getThreads(data.communityId);
+        // Emit the threads back to the client
+        console.log(threads)
+        socket.emit('threads', threads);
+    } catch (error) {
+        console.error('Error fetching threads:', error);
+        // Handle error if unable to fetch the threads
+        // Emit an error event or send an appropriate response to the client
+    }
+});
 
   // Handle user disconnection
   socket.on('disconnect', () => {
