@@ -10,44 +10,30 @@
       body{
         background-color: rgb(25, 32, 54);;
       }
-      #messageForm{
-        position: absolute;
-        bottom:5%;
-      }
-      #messageArea{
-        
-        position: absolute;
-        bottom: 10%;
-      }
+      #messageForm {
+          display: none; /* Initially hide the form */
+          padding: 10px;
+          background-color: #0e99d4;
+          border-radius: 5px;
+        }
+        #messageForm input[type="text"] {
+          width: calc(100% - 70px); /* Adjust width of input field */
+          padding: 5px;
+          margin-right: 10px;
+        }
+        #messageForm button[type="submit"] {
+          padding: 5px 10px;
+          background-color: #04AA6D;
+          color: white;
+          border: none;
+          border-radius: 3px;
+          cursor: pointer;
+        }
       .buttonContainer input[type="submit"].selected {
           background-color: aqua;
           color: black;
       }
-      #Area input[type='submit']{
-        position: relative;
-        flex-grow: 1;
-        width: 70%;
-        height: 20%;
-        padding: 10px;
-        border: none;
-        background-color: #0e99d4;
-        color: white;
-        text-align: center;
-        text-decoration: none;
-        display: inline-block;
-        font-size: 16px;
-        cursor: pointer;
-        border-radius: 5px;
-        transition: background-color 0.3s;
-        margin-bottom: 10px; /* Add margin between buttons */
-      }
-      #Area input[type='submit']:hover{
-        background-color: #0a0037; /* Darken the color on hover */
-      }
-      #Area input[type='submit'].selected{
-        background-color: #fafafa;
-        color: black;
-      }
+      
       #comtab{
         position: absolute;
         left: 0%;
@@ -109,11 +95,40 @@
       }
       .view{
         position: absolute;
-    top: 10%; /* Leave 10% space from the top */
-    left: 0;
-    width: 100%;
-    height: 90%; /* Take up 90% of the viewport height */
+        top: 10%; /* Leave 10% space from the top */
+        left: 0;
+        width: 100%;
+        height: 90%; /* Take up 90% of the viewport height */
           }
+          /* Style for the thread div */
+    .thread {
+      margin-bottom: 10px;
+      padding: 15px;
+      border-radius: 10px;
+      width: 70%;
+      background-color: red;
+      color: white;
+      font-weight: bold;
+      position: relative;
+    }
+
+    /* Style for the reply button */
+    .reply-button {
+      position: absolute;
+      bottom: 10px;
+      right: 10px;
+      padding: 5px 10px;
+      background-color: #0e99d4;
+      color: white;
+      border: none;
+      cursor: pointer;
+      border-radius: 5px;
+      transition: background-color 0.3s;
+    }
+
+    .reply-button:hover {
+      background-color: #0a0037;
+    }
     </style>
 </head>
 <body>
@@ -121,127 +136,190 @@
     <section id="comtab">
       <div class="buttonContainer" id="buttonContainer"></div>
     </section>
-  <aside class="ChatWindow">
-    
-    <div id="messageArea"></div>
-    <div id="Area" style="background-color: navy; height: 100%; width: 100%;">
-
-    </div>
-    <form id="messageForm">
-      <input type="text" id="messageInput" placeholder="Type your message...">
-      <button type="submit">Send</button>
-    </form>
-    
-  </aside>
+    <aside class="ChatWindow">
+      <div id="messageArea"></div>
+      <div id="Area" style="background-color: navy; height: 100%; width: 100%;"></div>
+      <!-- Form inside thread div -->
+      <div id="messageForm" class="thread">
+        <form id="messageFormInner">
+          <input type="text" id="messageInput" placeholder="Type your message...">
+          <button type="submit">Send</button>
+        </form>
+      </div>
+    </aside>
   <!-- Include Socket.IO library -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.1/socket.io.js"></script>
-  <script>
-    // Establish WebSocket connection with server
-    const socket = io();
-    
-    // Get reference to HTML elements
-    const messageArea = document.getElementById('messageArea');
-    const messageForm = document.getElementById('messageForm');
-    const messageInput = document.getElementById('messageInput');
-    
-    // Event listener for form submission
-    messageForm.addEventListener('submit', (event) => {
-      event.preventDefault();
-      const message = messageInput.value.trim();
-      if (message !== '') {
-        // Emit 'message' event to server with message and username
-        socket.emit('message', { username: getUsername(), message });
-        
-        // Clear input field
-        messageInput.value = '';
-      }
-    });
-      socket.on('message', (data) => {
-      // Append the new message to the message area
+  <!-- Include Socket.IO library -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.1/socket.io.js"></script>
+<script>
+  // Establish WebSocket connection with server
+  const socket = io();
+  const messageArea = document.getElementById('messageArea');
+  const messageFormInner = document.getElementById('messageFormInner');
+  const messageInput = document.getElementById('messageInput');
+  let activeThread = null;
+
+  // Event listener for form submission
+  messageFormInner.addEventListener('submit', (event) => {
+    event.preventDefault();
+    const message = messageInput.value.trim();
+    if (message !== '') {
+      // Emit 'message' event to server with message and username
+      socket.emit('message', { username: getUsername(), message });
+
+      // Clear input field
+      messageInput.value = '';
+    }
+  });
+
+  // Event listener for receiving messages from the server
+  socket.on('message', (data) => {
+    if (activeThread) {
+      const messageArea = activeThread.querySelector('.message-area');
+      // Append the new message to the message area of the selected thread
       messageArea.innerHTML += `<p style="color:white;"><strong>${data.username}:</strong> ${data.message}</p>`;
-      
+
       // Scroll to bottom of message area
       messageArea.scrollTop = messageArea.scrollHeight;
-      });
-    
-    // Event listener for 'initialMessages' event from server
-    socket.on('initialMessages', (messages) => {
-      // Display initial chat messages in chat area
+    }
+  });
+
+  // Event listener for receiving 'initialMessages' event from server
+  socket.on('initialMessages', (messages) => {
+    if (activeThread) {
+      const messageArea = activeThread.querySelector('.message-area');
+      // Display initial chat messages in chat area of the selected thread
       messages.forEach((message) => {
         messageArea.innerHTML += `<p style="color:white;"><strong>${message.username}:</strong> ${message.message}</p>`;
       });
-      
+
       // Scroll to bottom of chat area
       messageArea.scrollTop = messageArea.scrollHeight;
-    });
-
-    socket.on('comList', (comList) => {
-      console.log('Received comList from server:', comList);
-      // Clear existing buttons
-      buttonContainer.innerHTML = '';
-      // Loop through the list of communities
-      comList.forEach((value) => {
-        // Create a button element for each community
-        const button = document.createElement('input');
-        // Set the button text to the value
-        button.type='submit'
-        button.value= value.name;
-        button.dataset.communityId = value.id;
-        button.addEventListener('click', () => {
-                // Remove 'selected' class from all buttons
-                document.querySelectorAll('.buttonContainer input').forEach(btn => {
-                    btn.classList.remove('selected');
-                });
-                const communityId = button.dataset.communityId;
-                getThreads(communityId);
-                // Add 'selected' class to the clicked button
-                button.classList.add('selected');
-            });
-            // Append the button to the button container
-            buttonContainer.appendChild(button);
-      });
-    });
-    const area = document.getElementById('Area');
-    // Function to handle 'threads' event
-    socket.on('threads', (threads) => {
-            // Display threads in the Area div
-            area.innerHTML = '';
-            threads.forEach(thread => {
-              const threadButton = document.createElement('input');
-              threadButton.type = 'submit';
-              threadButton.value = thread.Title;
-              threadButton.addEventListener('click', () => {
-                  document.querySelectorAll('#Area input[type="submit"]').forEach(btn => {
-                  btn.classList.remove('selected');
-            });
-            // Add 'selected' class to the clicked button
-            threadButton.classList.add('selected');
-              });
-              area.appendChild(threadButton);
-            });
-        });
-
-    // Function to send 'getThreads' event to server with community name
-    function getThreads(communityId) {
-            area.innerHTML = '';
-            socket.emit('getThreads', { communityId });
-        }    
-    
-    // Function to get username from local storage or prompt user to enter username
-    function getUsername() {
-      let username = localStorage.getItem('username');
-      if (!username) {
-        username = prompt('Enter your username:');
-        localStorage.setItem('username', username);
-      }
-      return username;
     }
-    // Emit 'getCom' event to server to request the list of communities
-    document.addEventListener('DOMContentLoaded', () => {
-      socket.emit('getCom');
+  });
+
+  // Event listener for receiving 'comList' event from server
+  socket.on('comList', (comList) => {
+    console.log('Received comList from server:', comList);
+    const buttonContainer = document.getElementById('buttonContainer');
+    // Clear existing buttons
+    buttonContainer.innerHTML = '';
+    // Loop through the list of communities
+    comList.forEach((value) => {
+      // Create a button element for each community
+      const button = document.createElement('input');
+      // Set the button text to the value
+      button.type = 'submit';
+      button.value = value.name;
+      button.dataset.communityId = value.id;
+      button.addEventListener('click', () => {
+        // Remove 'selected' class from all buttons
+        document.querySelectorAll('.buttonContainer input').forEach(btn => {
+          btn.classList.remove('selected');
+        });
+        const communityId = button.dataset.communityId;
+        getThreads(communityId);
+        // Add 'selected' class to the clicked button
+        button.classList.add('selected');
+      });
+      // Append the button to the button container
+      buttonContainer.appendChild(button);
     });
+  });
+
+  const area = document.getElementById('Area');
+  // Function to handle 'threads' event
+  socket.on('threads', (threads) => {
+    // Display threads in the Area div
+    area.innerHTML = '';
+    threads.forEach(thread => {
+      const threadDiv = document.createElement('div');
+      threadDiv.classList.add('thread');
+      threadDiv.style.backgroundColor = 'red';
+      // Create a span for the thread title
+      const titleSpan = document.createElement('span');
+      titleSpan.textContent = thread.Title;
+      tiId=thread.threadId
+      threadDiv.appendChild(titleSpan);
+
+      // Create the message area for this thread
+      const messageArea = document.createElement('div');
+      messageArea.classList.add('message-area');
+      threadDiv.appendChild(messageArea);
+
+      // Create a button for replying
+      const replyButton = document.createElement('button');
+      replyButton.textContent = 'Reply';
+      replyButton.classList.add('reply-button');
+      replyButton.addEventListener('click', () => {
+        // Toggle display of message form inside the thread
+        const messageForm = threadDiv.querySelector('.message-form');
+        if (messageForm.style.display === 'block') {
+          messageForm.style.display = 'none';
+          activeThread = null; // No active thread
+        } else {
+          // Disable forms in other threads
+          document.querySelectorAll('.message-form').forEach(form => {
+            form.style.display = 'none';
+          });
+          // Enable form in current thread
+          messageForm.style.display = 'block';
+          activeThread = threadDiv;
+          tid = activeThread.tiId
+        }
+      });
+      threadDiv.appendChild(replyButton);
+
+      // Append the message form inside the thread div
+      const messageForm = document.createElement('form');
+      messageForm.classList.add('message-form');
+      messageForm.style.display = 'none'; // Initially hide the form
+      messageForm.innerHTML = `
+        <input type="text" id="messageInput" placeholder="Type your message...">
+        <button type="submit">Send</button>
+      `;
+      messageForm.addEventListener('submit', (event) => {
+        event.preventDefault();
+        const message = messageForm.querySelector('#messageInput').value.trim();
+        if (message !== '') {
+          // Emit 'message' event to server with message and username
+          socket.emit('message', { username: getUsername(), message });
+
+          // Clear input field
+          messageForm.querySelector('#messageInput').value = '';
+        }
+      });
+      threadDiv.appendChild(messageForm);
+
+      // Append the threadDiv to the Area
+      area.appendChild(threadDiv);
+    });
+  });
+
+  // Function to send 'getThreads' event to server with community name
+  function getThreads(communityId) {
+    area.innerHTML = '';
+    socket.emit('getThreads', { communityId });
+  }    
+
+  // Function to get username from local storage or prompt user to enter username
+  function getUsername() {
+    let username = localStorage.getItem('username');
+    if (!username) {
+      username = prompt('Enter your username:');
+      localStorage.setItem('username', username);
+    }
+    return username;
+  }
+
+  // Emit 'getCom' event to server to request the list of communities
+  document.addEventListener('DOMContentLoaded', () => {
+    socket.emit('getCom');
+  });
+
+</script>
+
   
-    </script>
 </div>
 </body>
 </html>

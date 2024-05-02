@@ -1,44 +1,51 @@
 const express = require('express');
 const http = require('http');
 const socketio = require('socket.io');
-const db = require('./ChatBase')
+const db = require('./ChatBase');
 const app = express();
-const threaddb = require('./ThreadDB')
+const threaddb = require('./ThreadDB');
 const server = http.createServer(app);
 const io = socketio(server);
 const comDB = require('./comDB');
 
-// Array to store chat messages
-
-let messages = []
-
 // Middleware to parse JSON bodies
 app.use(express.json());
+
+// Array to store chat messages for each thread
+const threadMessages = {};
 
 // Route to serve the chat room interface
 app.get('/', (req, res) => {
   res.sendFile(__dirname + '/index.html');
-
 });
-
 
 // Socket.IO event handlers
 io.on('connection', (socket) => {
   console.log('New user connected');
 
-  // Send chat messages to client
-  io.emit('initialMessages', messages);
-
   // Handle new messages
-  socket.on('message', (data) => {
-    console.log(`Message received from ${data.username}: ${data.message}`);
-    io.emit('message', data);
+  socket.on('message', async (data) => {
+    console.log(`Message received from ${data.username} in thread ${data.threadId}: ${data.message}`);
+    
+    // Store the message in threadMessages
+    const threadId = data.threadId;
+    if (threadId) {
+      if (!threadMessages[threadId]) {
+        threadMessages[threadId] = []; // Create an array for threadId if it doesn't exist
+      }
+      threadMessages[threadId].push({ username: data.username, message: data.message });
+    }
 
-    // Add message to array
-    messages.push(data);
+    // Broadcast message to the specific thread identified by its ID
+    if (threadId) {
+      io.to(threadId).emit('message', data);
+    }
+  });
 
-    // Broadcast message to all connected clients
-    db.createmessage(data.username,data.message)
+  // Send chat messages for the specific thread to client
+  socket.on('getMessages', (threadId) => {
+    const messages = threadMessages[threadId] || [];
+    socket.emit('threadMessages', messages);
   });
 
   socket.on('getCom', async () => {
@@ -58,25 +65,23 @@ io.on('connection', (socket) => {
 
   socket.on('getThreads', async (data) => {
     try {
-        // Call the getThreads function with the selected community name
-        const threads = await threaddb.getThreads(data.communityId);
-        // Emit the threads back to the client
-        console.log(threads)
-        socket.emit('threads', threads);
+      // Call the getThreads function with the selected community name
+      const threads = await threaddb.getThreads(data.communityId);
+      // Emit the threads back to the client
+      console.log(threads);
+      socket.emit('threads', threads);
     } catch (error) {
-        console.error('Error fetching threads:', error);
-        // Handle error if unable to fetch the threads
-        // Emit an error event or send an appropriate response to the client
+      console.error('Error fetching threads:', error);
+      // Handle error if unable to fetch the threads
+      // Emit an error event or send an appropriate response to the client
     }
-});
+  });
 
   // Handle user disconnection
   socket.on('disconnect', () => {
     console.log('User disconnected');
   });
 });
-
-
 
 // Start the server
 const PORT = process.env.PORT || 3000;
