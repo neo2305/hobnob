@@ -13,9 +13,6 @@ const comDB = require('./comDB');
 // Middleware to parse JSON bodies
 app.use(express.json());
 
-// Array to store chat messages for each thread
-const threadMessages = {};
-
 // Route to serve the chat room interface
 app.get('/', (req, res) => {
   res.sendFile(__dirname + '/index.html');
@@ -44,6 +41,20 @@ io.on('connection', (socket) => {
     socket.broadcast.to(threadId).emit('message', { threadId, message });
   });
 
+  // Handle fetching messages for a thread
+  socket.on('getMessages', async (data) => {
+    const { threadId } = data;
+    try {
+      // Fetch all messages for the thread
+      const messages = await db.getMessages(threadId);
+      // Emit the messages to the client
+      socket.emit('threadMessages', { threadId, messages });
+    } catch (error) {
+      console.error('Error fetching messages:', error);
+      // Handle error if unable to fetch messages
+      // Emit an error event or send an appropriate response to the client
+    }
+  });
 
   socket.on('getCom', async () => {
     console.log('Received getCom event from client');
@@ -65,7 +76,6 @@ io.on('connection', (socket) => {
       // Call the getThreads function with the selected community name
       const threads = await threaddb.getThreads(data.communityId);
       // Emit the threads back to the client
-      // console.log(threads);
       socket.emit('threads', threads);
     } catch (error) {
       console.error('Error fetching threads:', error);

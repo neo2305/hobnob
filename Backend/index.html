@@ -14,8 +14,8 @@
         #messageForm {
             position: relative;
             bottom: 3%;
-            display: flex; /* Make the form items flex */
-            align-items: center; /* Align items vertically */
+            display: flex;
+            align-items: center;
             display: none;
             width: 100%;
             padding: 5px;
@@ -24,7 +24,7 @@
         }
 
         #messageForm input[type="text"] {
-          flex-grow: 1; /* Allow input to grow to fill available space */
+          flex-grow: 1;
             width: calc(100% - 80px);
             padding: 10px;
             margin-right: 10px;
@@ -33,7 +33,6 @@
         }
 
         #messageForm button[type="submit"] {
-            
             width: 70px;
             padding: 10px;
             border: none;
@@ -57,13 +56,23 @@
             background-color: rgb(255, 255, 255);
             color: black;
         }
-
+        #messageArea {
+            /* background-color: #04AA6D; */
+            top: 10%;
+            border: #ffffff;
+            border-width: 2px;
+            border-style: groove;
+            height: 86%;
+            width: 95%;
+            color: white;
+            font-family: 'Comic Sans MS', cursive, sans-serif; 
+        }
         #Area input[type='submit'] {
             position: relative;
             flex-grow: 1;
             width: 100%;
             height: 20%;
-            padding: 10px;
+            /* padding: 10px; */
             border: none;
             background-color: #cdd5d0;
             color: rgb(0, 0, 0);
@@ -107,11 +116,11 @@
             border-color: aliceblue;
             border-style: groove;
             bottom: 0%;
-            position: absolute;
+            position: relative;
             right: 0px;
             width: 70%;
             padding-left: 12px;
-            overflow-y: auto;
+            overflow-y:scroll;
         }
 
         .buttonContainer input {
@@ -190,7 +199,8 @@
       <script>
           // Establish WebSocket connection with server
           const socket = io();
-  
+          const previousThreads = [];
+
           // Get reference to HTML elements
           const messageArea = document.getElementById('messageArea');
           const messageForm = document.getElementById('messageForm');
@@ -198,161 +208,118 @@
           const selectedThreadIdInput = document.getElementById('selectedThreadId');
   
           // Event listener for form submission
-          // Event listener for form submission
           messageForm.addEventListener('submit', (event) => {
             event.preventDefault();
             const message = messageInput.value.trim();
-            const threadId = messageForm.dataset.threadId; // Get the threadId from the message form's dataset
+            const threadId = selectedThreadIdInput.value;
+
 
             if (message !== '') {
-                // Emit 'message' event to server with message, username, and threadId
                 socket.emit('message', { username: getUsername(), message, threadId });
 
-                // Check if the submitted threadId matches the currently selected threadId
                 const selectedThreadId = selectedThreadIdInput.value;
-                console.log(threadId ,selectedThreadIdInput )
                 if (threadId === selectedThreadId) {
-                    // Append the message to the message area
                     const messageDiv = document.createElement('div');
                     messageDiv.textContent = message;
                     messageArea.appendChild(messageDiv);
                 }
 
-                // Clear input field
                 messageInput.value = '';
             }
         });
   
-          socket.on('message', (messageData) => {
-            const { threadId, message } = messageData;
-            const messageArea = document.querySelector(`.thread[data-thread-id="${threadId}"] .message-area`);
-            const messageDiv = document.createElement('div');
-            messageDiv.textContent = message;
-            messageArea.appendChild(messageDiv);
+        socket.on('threadMessages', ({ messages }) => {
+            // Clear previous messages
+            messageArea.innerHTML = '';
+
+            // Display each message in the message area
+            messages.forEach(message => {
+                const messageDiv = document.createElement('div');
+                messageDiv.textContent = `${message.user}: ${message.text}`;
+                messageArea.appendChild(messageDiv);
+            });
         });
   
-          // Event listener for 'initialMessages' event from server
-          socket.on('initialMessages', (messages) => {
-              // Display initial chat messages in chat area
-              messages.forEach((message) => {
-                  messageArea.innerHTML += `<p style="color:white;"><strong>${message.username}:</strong> ${message.message}</p>`;
-              });
-  
-              // Scroll to bottom of chat area
-              messageArea.scrollTop = messageArea.scrollHeight;
-          });
-  
           socket.on('comList', (comList) => {
-              console.log('Received comList from server:', comList);
-              // Clear existing buttons
               buttonContainer.innerHTML = '';
-              // Loop through the list of communities
               comList.forEach((value) => {
-                  // Create a button element for each community
                   const button = document.createElement('input');
-                  // Set the button text to the value
                   button.type = 'submit'
                   button.value = value.name;
                   button.dataset.communityId = value.id;
                   button.addEventListener('click', () => {
-                      // Remove 'selected' class from all buttons
                       document.querySelectorAll('.buttonContainer input').forEach(btn => {
                           btn.classList.remove('selected');
                       });
                       const communityId = button.dataset.communityId;
                       getThreads(communityId);
-                      // Add 'selected' class to the clicked button
                       button.classList.add('selected');
                   });
-                  // Append the button to the button container
                   buttonContainer.appendChild(button);
               });
           });
           const area = document.getElementById('Area');
-          // Function to handle 'threads' event
-          let previousThreads = []; // Variable to store the previous state of the thread list
   
           socket.on('threads', (threads) => {
-              // Display threads in the Area div
               area.innerHTML = '';
               threads.forEach(thread => {
                   const threadButton = document.createElement('input');
                   threadButton.type = 'submit';
                   threadButton.value = thread.Title;
-                  threadButton.dataset.threadId = thread.thread_id; // Use 'thread_id' instead of '_id'
+                  threadButton.dataset.threadId = thread.thread_id; 
                   threadButton.addEventListener('click', () => {
                     const threadId = threadButton.dataset.threadId;
-                      // Set the threadId in the message form data object
                       messageForm.dataset.threadId = threadId;
-                      // Store the current thread list state
+                      messageForm.style.display='flex'
                       previousThreads.push(threads);
-                      // Display a back button// Set the selected thread ID
-                      // Show the message form
-                      messageForm.style.display = 'flex';
-                      // Store the current thread list state
-                      previousThreads.push(threads);
-                      // Clear the Area div
                       area.innerHTML = '';
-                      // Display a back button
+                      getMessages(threadId);
                       const backButton = document.createElement('button');
                       backButton.textContent = 'Back';
                       backButton.addEventListener('click', () => {
-                          // Restore the previous thread list state
                           const prevState = previousThreads.pop();
                           renderThreads(prevState);
-                          // Hide the message form
                           messageForm.style.display = 'none';
                       });
                       area.appendChild(backButton);
-                      // Fetch messages under the selected thread ID
-                      getMessages(threadId);
+                    //   getMessages(threadId);
                   });
                   area.appendChild(threadButton);
               });
           });
   
           function renderThreads(threads) {
-              // Display threads in the Area div
               area.innerHTML = '';
               threads.forEach(thread => {
                   const threadButton = document.createElement('input');
                   threadButton.type = 'submit';
                   threadButton.value = thread.Title;
-                  threadButton.dataset.threadId = thread.thread_id; // Use 'thread_id' instead of '_id'
+                  threadButton.dataset.threadId = thread.thread_id; 
                   threadButton.addEventListener('click', () => {
                       const threadId = threadButton.dataset.threadId;
-                      selectedThreadIdInput.value = threadId; // Set the selected thread ID
-                      // Show the message form
+                      selectedThreadIdInput.value = threadId;
                       messageForm.style.display = 'block';
-                      // Store the current thread list state
                       previousThreads.push(threads);
-                      // Clear the Area div
                       area.innerHTML = '';
-                      // Display a back button
                       const backButton = document.createElement('button');
                       backButton.textContent = 'Back';
                       backButton.addEventListener('click', () => {
-                          // Restore the previous thread list state
                           const prevState = previousThreads.pop();
                           renderThreads(prevState);
-                          // Hide the message form
                           messageForm.style.display = 'none';
                       });
                       area.appendChild(backButton);
-                      // Fetch messages under the selected thread ID
                       getMessages(threadId);
                   });
                   area.appendChild(threadButton);
               });
           }
   
-          // Function to send 'getThreads' event to server with community name
           function getThreads(communityId) {
               area.innerHTML = '';
               socket.emit('getThreads', { communityId });
           }
   
-          // Function to get username from local storage or prompt user to enter username
           function getUsername() {
               let username = localStorage.getItem('username');
               if (!username) {
@@ -362,15 +329,15 @@
               return username;
           }
   
-          // Emit 'getCom' event to server to request the list of communities
           document.addEventListener('DOMContentLoaded', () => {
               socket.emit('getCom');
           });
   
           function getMessages(threadId) {
-              // Emit 'getMessages' event to server with the thread ID
-              socket.emit('getMessages', { threadId });
-          }
+            messageArea.innerHTML = ''; // Clear previous messages
+            // Emit 'getMessages' event to server with the thread ID
+            socket.emit('getMessages', { threadId });
+        }
   
       </script>
   </div>
