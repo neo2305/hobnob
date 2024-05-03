@@ -26,12 +26,24 @@ io.on('connection', (socket) => {
   console.log('New user connected');
 
   // Handle new messages
-  socket.on('message', (data) => {
+  socket.on('message', async (data) => {
     const { username, message, threadId } = data;
     console.log(`Received message from ${username} in thread ${threadId}: ${message}`);
-    // Broadcast the message to all clients
-    io.emit('message', { threadId, message });
+    
+    // Save the message to the database
+    try {
+      const savedMessage = await db.createMessage(username, message, threadId);
+      console.log('Message saved successfully:', savedMessage);
+    } catch (error) {
+      console.error('Error saving message:', error);
+      // Handle error if unable to save the message
+      // Emit an error event or send an appropriate response to the client
+    }
+
+    // Broadcast the message to all clients in the same thread
+    socket.broadcast.to(threadId).emit('message', { threadId, message });
   });
+
 
   socket.on('getCom', async () => {
     console.log('Received getCom event from client');

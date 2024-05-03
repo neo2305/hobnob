@@ -1,262 +1,378 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="utf-8">
-  <meta http-equiv="X-UA-Compatible" content="IE=edge">
-  <title>Chat Room</title>
-  <meta name="description" content="">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <style>
-    body {
-      background-color: rgb(25, 32, 54);;
-    }
-    #messageForm {
-      display: none; /* Initially hide the form */
-      padding: 10px;
-      background-color: #0e99d4;
-      border-radius: 5px;
-    }
-    #messageForm input[type="text"] {
-      width: calc(100% - 70px); /* Adjust width of input field */
-      padding: 5px;
-      margin-right: 10px;
-    }
-    #messageForm button[type="submit"] {
-      padding: 5px 10px;
-      background-color: #04AA6D;
-      color: white;
-      border: none;
-      border-radius: 3px;
-      cursor: pointer;
-    }
-    .buttonContainer input[type="submit"].selected {
-      background-color: aqua;
-      color: black;
-    }
-    #comtab {
-      position: absolute;
-      left: 0%;
-      right: 75%;
-      border-right-width: 10px;
-      border-color: aliceblue;
-      height: 100%;
-      width: 25%;
-    }
-    .ChatWindow {
-      height: 100%;
-      left: 25%;
-      border-left: 2px;
-      border-bottom: 0cm;
-      border-right: 0cm;
-      border-top: 0cm;
-      border-left-width: 10px;
-      border-color: aliceblue;
-      border-style: groove;
-      bottom: 0%;
-      position: absolute;
-      right:0px;
-      width: 70%;
-      padding-left: 12px;
-      overflow-y: auto;
-    }
-    .buttonContainer input {
-      position: relative;
-      flex-grow: 1;
-      width: 100%;
-      height: 15%;
-      padding: 10px;
-      border: #04AA6D;
-      background-color: rgb(25, 32, 54);
-      border-bottom: 2px solid white; 
-      color: white;
-      text-align: center;
-      text-decoration: none;
-      display: inline-block;
-      font-size: 16px;
-      cursor: pointer;
-    }
-    .buttoncontainer {
-      background-color: #04AA6D;
-      border: none;
-      color: white;
-      padding: 15px 32px;
-      text-align: center;
-      text-decoration: none;
-      display: inline-block;
-      font-size: 16px;
-    }
-    .textmsg {
-      color: white;
-    }
-    .view {
-      position: absolute;
-      top: 10%; /* Leave 10% space from the top */
-      left: 0;
-      width: 100%;
-      height: 90%; /* Take up 90% of the viewport height */
-    }
-    .thread {
-      margin-bottom: 10px;
-      padding: 15px;
-      border-radius: 10px;
-      width: 70%;
-      background-color: red;
-      color: white;
-      font-weight: bold;
-      position: relative;
-    }
-    .reply-button {
-      position: absolute;
-      bottom: 10px;
-      right: 10px;
-      padding: 5px 10px;
-      background-color: #0e99d4;
-      color: white;
-      border: none;
-      cursor: pointer;
-      border-radius: 5px;
-      transition: background-color 0.3s;
-    }
-    .reply-button:hover {
-      background-color: #0a0037;
-    }
-  </style>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>Chat Room</title>
+    <meta name="description" content="">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <style>
+        body {
+            background-color: rgb(255, 255, 255);
+        }
+
+        #messageForm {
+            position: relative;
+            bottom: 3%;
+            display: flex; /* Make the form items flex */
+            align-items: center; /* Align items vertically */
+            display: none;
+            width: 100%;
+            padding: 5px;
+            box-sizing: border-box;
+            background-color: rgb(47, 42, 44);
+        }
+
+        #messageForm input[type="text"] {
+          flex-grow: 1; /* Allow input to grow to fill available space */
+            width: calc(100% - 80px);
+            padding: 10px;
+            margin-right: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+
+        #messageForm button[type="submit"] {
+            
+            width: 70px;
+            padding: 10px;
+            border: none;
+            background-color: #ffffff;
+            color: rgb(0, 0, 0);
+            border-radius: 10px;
+            cursor: pointer;
+        }
+
+        #messageForm button[type="submit"]:hover {
+            background-color: #030303;
+            color: white;
+        }
+
+        #messageArea {
+            position: absolute;
+            bottom: 10%;
+        }
+
+        .buttonContainer input[type="submit"].selected {
+            background-color: rgb(255, 255, 255);
+            color: black;
+        }
+
+        #Area input[type='submit'] {
+            position: relative;
+            flex-grow: 1;
+            width: 100%;
+            height: 20%;
+            padding: 10px;
+            border: none;
+            background-color: #cdd5d0;
+            color: rgb(0, 0, 0);
+            text-align: center;
+            text-decoration: none;
+            display: inline-block;
+            font-size: 16px;
+            cursor: pointer;
+            border-radius: 5px;
+            transition: background-color 0.3s;
+            margin-bottom: 10px;
+        }
+
+        #Area input[type='submit']:hover {
+            background-color: #0c0c1b;
+            color: aliceblue;
+        }
+
+        #Area input[type='submit'].selected {
+            background-color: #1faad8;
+        }
+
+        #comtab {
+            position: absolute;
+            left: 0%;
+            right: 75%;
+            border-right-width: 10px;
+            border-color: rgb(47, 42, 44);
+            height: 100%;
+            width: 25%;
+        }
+
+        .ChatWindow {
+            height: 100%;
+            left: 25%;
+            border-left: 2px;
+            border-bottom: 0cm;
+            border-right: 0cm;
+            border-top: 0cm;
+            border-left-width: 10px;
+            border-color: aliceblue;
+            border-style: groove;
+            bottom: 0%;
+            position: absolute;
+            right: 0px;
+            width: 70%;
+            padding-left: 12px;
+            overflow-y: auto;
+        }
+
+        .buttonContainer input {
+            position: relative;
+            flex-grow: 1;
+            width: 100%;
+            height: 15%;
+            padding: 10px;
+            border: #04AA6D;
+            background-color: rgb(47, 42, 42);
+            border-bottom: 2px solid white;
+            color: white;
+            text-align: center;
+            text-decoration: none;
+            display: inline-block;
+            font-size: 16px;
+            cursor: pointer;
+        }
+
+        .buttoncontainer {
+            background-color: #04AA6D;
+            border: none;
+            color: white;
+            padding: 15px 32px;
+            text-align: center;
+            text-decoration: none;
+            display: inline-block;
+            font-size: 16px;
+        }
+
+        .textmsg {
+            color: white;
+        }
+
+        .view {
+            background-color: rgb(47, 42, 42);
+            position: absolute;
+            top: 10%;
+            left: 0;
+            width: 100%;
+            height: 90%;
+        }
+
+        .header {
+            position: absolute;
+            width: 100%;
+            background-color: #5c6461;
+            left: 0%;
+            height: 10%;
+            bottom: 90%;
+            border-bottom: #0c0c1b;
+        }
+    </style>
 </head>
 <body>
+  <div class="header"></div>
   <div class="view">
-    <section id="comtab">
-      <div class="buttonContainer" id="buttonContainer"></div>
-    </section>
-    <aside class="ChatWindow">
-      <div id="messageArea"></div>
-      <div id="Area" style="background-color: navy; height: 100%; width: 100%;"></div>
-      <div id="messageForm" class="thread">
-        <form id="messageFormInner">
-          <input type="text" id="messageInput" placeholder="Type your message...">
-          <button type="submit">Send</button>
-        </form>
-      </div>
-    </aside>
-    <!-- Include Socket.IO library -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.1/socket.io.js"></script>
-    <script>
-      // Establish WebSocket connection with server
-      const socket = io();
-      const messageArea = document.getElementById('messageArea');
-      const messageFormInner = document.getElementById('messageFormInner');
-      const messageInput = document.getElementById('messageInput');
-      let activeThreadId = null;
+      <section id="comtab">
+          <div class="buttonContainer" id="buttonContainer"></div>
+      </section>
+      <aside class="ChatWindow">
   
-      // Function to handle receiving 'comList' event from server
-      socket.on('comList', (comList) => {
-          console.log('Received comList from server:', comList);
-          const buttonContainer = document.getElementById('buttonContainer');
-          buttonContainer.innerHTML = ''; // Clear existing buttons
-          comList.forEach((value) => {
-              const button = document.createElement('input');
-              button.type = 'submit';
-              button.value = value.name;
-              button.dataset.communityId = value.id;
-              button.addEventListener('click', () => {
-                  document.querySelectorAll('.buttonContainer input').forEach(btn => {
-                      btn.classList.remove('selected');
-                  });
-                  const communityId = button.dataset.communityId;
-                  getThreads(communityId);
-                  button.classList.add('selected');
+          <div id="messageArea"></div>
+          <div id="Area" style="background-color: rgb(48, 47, 44); height: 100%; width: 100%;">
+  
+          </div>
+          <form id="messageForm">
+              <input type="text" id="messageInput" placeholder="Type your message...">
+              <input type="hidden" id="selectedThreadId">
+              <button type="submit">Send</button>
+          </form>
+  
+      </aside>
+      <!-- Include Socket.IO library -->
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.1/socket.io.js"></script>
+      <script>
+          // Establish WebSocket connection with server
+          const socket = io();
+  
+          // Get reference to HTML elements
+          const messageArea = document.getElementById('messageArea');
+          const messageForm = document.getElementById('messageForm');
+          const messageInput = document.getElementById('messageInput');
+          const selectedThreadIdInput = document.getElementById('selectedThreadId');
+  
+          // Event listener for form submission
+          // Event listener for form submission
+          messageForm.addEventListener('submit', (event) => {
+            event.preventDefault();
+            const message = messageInput.value.trim();
+            const threadId = messageForm.dataset.threadId; // Get the threadId from the message form's dataset
+
+            if (message !== '') {
+                // Emit 'message' event to server with message, username, and threadId
+                socket.emit('message', { username: getUsername(), message, threadId });
+
+                // Check if the submitted threadId matches the currently selected threadId
+                const selectedThreadId = selectedThreadIdInput.value;
+                console.log(threadId ,selectedThreadIdInput )
+                if (threadId === selectedThreadId) {
+                    // Append the message to the message area
+                    const messageDiv = document.createElement('div');
+                    messageDiv.textContent = message;
+                    messageArea.appendChild(messageDiv);
+                }
+
+                // Clear input field
+                messageInput.value = '';
+            }
+        });
+  
+          socket.on('message', (messageData) => {
+            const { threadId, message } = messageData;
+            const messageArea = document.querySelector(`.thread[data-thread-id="${threadId}"] .message-area`);
+            const messageDiv = document.createElement('div');
+            messageDiv.textContent = message;
+            messageArea.appendChild(messageDiv);
+        });
+  
+          // Event listener for 'initialMessages' event from server
+          socket.on('initialMessages', (messages) => {
+              // Display initial chat messages in chat area
+              messages.forEach((message) => {
+                  messageArea.innerHTML += `<p style="color:white;"><strong>${message.username}:</strong> ${message.message}</p>`;
               });
-              buttonContainer.appendChild(button);
+  
+              // Scroll to bottom of chat area
+              messageArea.scrollTop = messageArea.scrollHeight;
           });
-      });
   
-      const area = document.getElementById('Area');
-  
-      // Function to handle 'threads' event
-      socket.on('threads', (threads) => {
-          console.log(threads);
-          area.innerHTML = ''; // Clear the area
-          threads.forEach(thread => {
-              const threadDiv = document.createElement('div');
-              threadDiv.classList.add('thread');
-              threadDiv.dataset.threadId = thread.thread_id;
-  
-              const titleSpan = document.createElement('span');
-              titleSpan.textContent = thread.Title;
-              threadDiv.appendChild(titleSpan);
-  
-              const messageArea = document.createElement('div');
-              messageArea.classList.add('message-area');
-              threadDiv.appendChild(messageArea);
-  
-              const replyButton = document.createElement('button');
-              replyButton.textContent = 'Reply';
-              replyButton.classList.add('reply-button');
-              replyButton.addEventListener('click', () => {
-                  const messageForm = threadDiv.querySelector('.message-form');
-                  if (messageForm.style.display === 'block') {
-                      messageForm.style.display = 'none';
-                      activeThreadId = null;
-                  } else {
-                      document.querySelectorAll('.message-form').forEach(form => {
-                          form.style.display = 'none';
+          socket.on('comList', (comList) => {
+              console.log('Received comList from server:', comList);
+              // Clear existing buttons
+              buttonContainer.innerHTML = '';
+              // Loop through the list of communities
+              comList.forEach((value) => {
+                  // Create a button element for each community
+                  const button = document.createElement('input');
+                  // Set the button text to the value
+                  button.type = 'submit'
+                  button.value = value.name;
+                  button.dataset.communityId = value.id;
+                  button.addEventListener('click', () => {
+                      // Remove 'selected' class from all buttons
+                      document.querySelectorAll('.buttonContainer input').forEach(btn => {
+                          btn.classList.remove('selected');
                       });
-                      messageForm.style.display = 'block';
-                      activeThreadId = thread.thread_id;
-                  }
+                      const communityId = button.dataset.communityId;
+                      getThreads(communityId);
+                      // Add 'selected' class to the clicked button
+                      button.classList.add('selected');
+                  });
+                  // Append the button to the button container
+                  buttonContainer.appendChild(button);
               });
-              threadDiv.appendChild(replyButton);
-  
-              const messageForm = document.createElement('form');
-              messageForm.classList.add('message-form');
-              messageForm.style.display = 'none'; // Initially hide the form
-              messageForm.innerHTML = `
-                  <input type="text" placeholder="Type your message...">
-                  <button type="submit">Send</button>
-              `;
-              messageForm.addEventListener('submit', (event) => {
-                  event.preventDefault();
-                  const message = messageForm.querySelector('input').value.trim();
-                  if (message !== '') {
-                      socket.emit('message', { username: getUsername(), message, threadId: activeThreadId });
-                      messageForm.querySelector('input').value = ''; // Clear input field
-                  }
-              });
-              threadDiv.appendChild(messageForm);
-  
-              area.appendChild(threadDiv);
           });
-      });
+          const area = document.getElementById('Area');
+          // Function to handle 'threads' event
+          let previousThreads = []; // Variable to store the previous state of the thread list
   
-      // Function to handle 'message' event - Display incoming messages in the appropriate thread's message area
-      socket.on('message', (messageData) => {
-          const { threadId, message } = messageData;
-          const messageArea = document.querySelector(`.thread[data-thread-id="${threadId}"] .message-area`);
-          const messageDiv = document.createElement('div');
-          messageDiv.textContent = message;
-          messageArea.appendChild(messageDiv);
-      });
+          socket.on('threads', (threads) => {
+              // Display threads in the Area div
+              area.innerHTML = '';
+              threads.forEach(thread => {
+                  const threadButton = document.createElement('input');
+                  threadButton.type = 'submit';
+                  threadButton.value = thread.Title;
+                  threadButton.dataset.threadId = thread.thread_id; // Use 'thread_id' instead of '_id'
+                  threadButton.addEventListener('click', () => {
+                    const threadId = threadButton.dataset.threadId;
+                      // Set the threadId in the message form data object
+                      messageForm.dataset.threadId = threadId;
+                      // Store the current thread list state
+                      previousThreads.push(threads);
+                      // Display a back button// Set the selected thread ID
+                      // Show the message form
+                      messageForm.style.display = 'flex';
+                      // Store the current thread list state
+                      previousThreads.push(threads);
+                      // Clear the Area div
+                      area.innerHTML = '';
+                      // Display a back button
+                      const backButton = document.createElement('button');
+                      backButton.textContent = 'Back';
+                      backButton.addEventListener('click', () => {
+                          // Restore the previous thread list state
+                          const prevState = previousThreads.pop();
+                          renderThreads(prevState);
+                          // Hide the message form
+                          messageForm.style.display = 'none';
+                      });
+                      area.appendChild(backButton);
+                      // Fetch messages under the selected thread ID
+                      getMessages(threadId);
+                  });
+                  area.appendChild(threadButton);
+              });
+          });
   
-      // Function to send 'getThreads' event to server with community ID
-      function getThreads(communityId) {
-          area.innerHTML = ''; // Clear the area
-          socket.emit('getThreads', { communityId });
-      }
-  
-      // Function to get username from local storage or prompt user to enter username
-      function getUsername() {
-          let username = localStorage.getItem('username');
-          if (!username) {
-              username = prompt('Enter your username:');
-              localStorage.setItem('username', username);
+          function renderThreads(threads) {
+              // Display threads in the Area div
+              area.innerHTML = '';
+              threads.forEach(thread => {
+                  const threadButton = document.createElement('input');
+                  threadButton.type = 'submit';
+                  threadButton.value = thread.Title;
+                  threadButton.dataset.threadId = thread.thread_id; // Use 'thread_id' instead of '_id'
+                  threadButton.addEventListener('click', () => {
+                      const threadId = threadButton.dataset.threadId;
+                      selectedThreadIdInput.value = threadId; // Set the selected thread ID
+                      // Show the message form
+                      messageForm.style.display = 'block';
+                      // Store the current thread list state
+                      previousThreads.push(threads);
+                      // Clear the Area div
+                      area.innerHTML = '';
+                      // Display a back button
+                      const backButton = document.createElement('button');
+                      backButton.textContent = 'Back';
+                      backButton.addEventListener('click', () => {
+                          // Restore the previous thread list state
+                          const prevState = previousThreads.pop();
+                          renderThreads(prevState);
+                          // Hide the message form
+                          messageForm.style.display = 'none';
+                      });
+                      area.appendChild(backButton);
+                      // Fetch messages under the selected thread ID
+                      getMessages(threadId);
+                  });
+                  area.appendChild(threadButton);
+              });
           }
-          return username;
-      }
   
-      // Emit 'getCom' event to server to request the list of communities
-      document.addEventListener('DOMContentLoaded', () => {
-          socket.emit('getCom');
-      });
-  </script>
+          // Function to send 'getThreads' event to server with community name
+          function getThreads(communityId) {
+              area.innerHTML = '';
+              socket.emit('getThreads', { communityId });
+          }
+  
+          // Function to get username from local storage or prompt user to enter username
+          function getUsername() {
+              let username = localStorage.getItem('username');
+              if (!username) {
+                  username = prompt('Enter your username:');
+                  localStorage.setItem('username', username);
+              }
+              return username;
+          }
+  
+          // Emit 'getCom' event to server to request the list of communities
+          document.addEventListener('DOMContentLoaded', () => {
+              socket.emit('getCom');
+          });
+  
+          function getMessages(threadId) {
+              // Emit 'getMessages' event to server with the thread ID
+              socket.emit('getMessages', { threadId });
+          }
+  
+      </script>
   </div>
-</body>
+  </body>
 </html>
