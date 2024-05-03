@@ -1,106 +1,100 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="utf-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <title>Chat Room</title>
-    <meta name="description" content="">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <style>
-      body{
-        background-color: rgb(25, 32, 54);;
-      }
-      #messageForm {
-          display: none; /* Initially hide the form */
-          padding: 10px;
-          background-color: #0e99d4;
-          border-radius: 5px;
-        }
-        #messageForm input[type="text"] {
-          width: calc(100% - 70px); /* Adjust width of input field */
-          padding: 5px;
-          margin-right: 10px;
-        }
-        #messageForm button[type="submit"] {
-          padding: 5px 10px;
-          background-color: #04AA6D;
-          color: white;
-          border: none;
-          border-radius: 3px;
-          cursor: pointer;
-        }
-      .buttonContainer input[type="submit"].selected {
-          background-color: aqua;
-          color: black;
-      }
-      
-      #comtab{
-        position: absolute;
-        left: 0%;
-        right: 75%;
-        border-right-width: 10px;
-        border-color: aliceblue;
-        height: 100%;
-        width: 25%;
-        /* padding-right: 12px; */
-      }
-      
-      .ChatWindow{
-        height: 100%;
-        left: 25%;
-        border-left: 2px;
-        border-bottom: 0cm;
-        border-right: 0cm;
-        border-top: 0cm;
-        border-left-width: 10px;
-        border-color: aliceblue;
-        border-style: groove;
-        bottom: 0%;
-        position: absolute;
-        right:0px;
-        width: 70%;
-        padding-left: 12px;
-        overflow-y: auto;
-      }
-      .buttonContainer input {
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <title>Chat Room</title>
+  <meta name="description" content="">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <style>
+    body {
+      background-color: rgb(25, 32, 54);;
+    }
+    #messageForm {
+      display: none; /* Initially hide the form */
+      padding: 10px;
+      background-color: #0e99d4;
+      border-radius: 5px;
+    }
+    #messageForm input[type="text"] {
+      width: calc(100% - 70px); /* Adjust width of input field */
+      padding: 5px;
+      margin-right: 10px;
+    }
+    #messageForm button[type="submit"] {
+      padding: 5px 10px;
+      background-color: #04AA6D;
+      color: white;
+      border: none;
+      border-radius: 3px;
+      cursor: pointer;
+    }
+    .buttonContainer input[type="submit"].selected {
+      background-color: aqua;
+      color: black;
+    }
+    #comtab {
+      position: absolute;
+      left: 0%;
+      right: 75%;
+      border-right-width: 10px;
+      border-color: aliceblue;
+      height: 100%;
+      width: 25%;
+    }
+    .ChatWindow {
+      height: 100%;
+      left: 25%;
+      border-left: 2px;
+      border-bottom: 0cm;
+      border-right: 0cm;
+      border-top: 0cm;
+      border-left-width: 10px;
+      border-color: aliceblue;
+      border-style: groove;
+      bottom: 0%;
+      position: absolute;
+      right:0px;
+      width: 70%;
+      padding-left: 12px;
+      overflow-y: auto;
+    }
+    .buttonContainer input {
       position: relative;
       flex-grow: 1;
       width: 100%;
       height: 15%;
-      /* margin: 5px; */
       padding: 10px;
       border: #04AA6D;
-      background-color: rgb(25, 32, 54) ;
+      background-color: rgb(25, 32, 54);
       border-bottom: 2px solid white; 
       color: white;
-      
       text-align: center;
       text-decoration: none;
       display: inline-block;
       font-size: 16px;
       cursor: pointer;
     }
-      .buttoncontainer{
-        background-color: #04AA6D; /* Green */
-        border: none;
-        color: white;
-        padding: 15px 32px;
-        text-align: center;
-        text-decoration: none;
-        display: inline-block;
-        font-size: 16px;
-      }
-      .textmsg{
-        color: white;
-      }
-      .view{
-        position: absolute;
-        top: 10%; /* Leave 10% space from the top */
-        left: 0;
-        width: 100%;
-        height: 90%; /* Take up 90% of the viewport height */
-          }
-          /* Style for the thread div */
+    .buttoncontainer {
+      background-color: #04AA6D;
+      border: none;
+      color: white;
+      padding: 15px 32px;
+      text-align: center;
+      text-decoration: none;
+      display: inline-block;
+      font-size: 16px;
+    }
+    .textmsg {
+      color: white;
+    }
+    .view {
+      position: absolute;
+      top: 10%; /* Leave 10% space from the top */
+      left: 0;
+      width: 100%;
+      height: 90%; /* Take up 90% of the viewport height */
+    }
     .thread {
       margin-bottom: 10px;
       padding: 15px;
@@ -111,8 +105,6 @@
       font-weight: bold;
       position: relative;
     }
-
-    /* Style for the reply button */
     .reply-button {
       position: absolute;
       bottom: 10px;
@@ -125,11 +117,10 @@
       border-radius: 5px;
       transition: background-color 0.3s;
     }
-
     .reply-button:hover {
       background-color: #0a0037;
     }
-    </style>
+  </style>
 </head>
 <body>
   <div class="view">
@@ -139,7 +130,6 @@
     <aside class="ChatWindow">
       <div id="messageArea"></div>
       <div id="Area" style="background-color: navy; height: 100%; width: 100%;"></div>
-      <!-- Form inside thread div -->
       <div id="messageForm" class="thread">
         <form id="messageFormInner">
           <input type="text" id="messageInput" placeholder="Type your message...">
@@ -147,179 +137,126 @@
         </form>
       </div>
     </aside>
-  <!-- Include Socket.IO library -->
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.1/socket.io.js"></script>
-  <!-- Include Socket.IO library -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.1/socket.io.js"></script>
-<script>
-  // Establish WebSocket connection with server
-  const socket = io();
-  const messageArea = document.getElementById('messageArea');
-  const messageFormInner = document.getElementById('messageFormInner');
-  const messageInput = document.getElementById('messageInput');
-  let activeThread = null;
-
-  // Event listener for form submission
-  messageFormInner.addEventListener('submit', (event) => {
-    event.preventDefault();
-    const message = messageInput.value.trim();
-    if (message !== '') {
-      // Emit 'message' event to server with message and username
-      socket.emit('message', { username: getUsername(), message });
-
-      // Clear input field
-      messageInput.value = '';
-    }
-  });
-
-  // Event listener for receiving messages from the server
-  socket.on('message', (data) => {
-    if (activeThread) {
-      const messageArea = activeThread.querySelector('.message-area');
-      // Append the new message to the message area of the selected thread
-      messageArea.innerHTML += `<p style="color:white;"><strong>${data.username}:</strong> ${data.message}</p>`;
-
-      // Scroll to bottom of message area
-      messageArea.scrollTop = messageArea.scrollHeight;
-    }
-  });
-
-  // Event listener for receiving 'initialMessages' event from server
-  socket.on('initialMessages', (messages) => {
-    if (activeThread) {
-      const messageArea = activeThread.querySelector('.message-area');
-      // Display initial chat messages in chat area of the selected thread
-      messages.forEach((message) => {
-        messageArea.innerHTML += `<p style="color:white;"><strong>${message.username}:</strong> ${message.message}</p>`;
-      });
-
-      // Scroll to bottom of chat area
-      messageArea.scrollTop = messageArea.scrollHeight;
-    }
-  });
-
-  // Event listener for receiving 'comList' event from server
-  socket.on('comList', (comList) => {
-    console.log('Received comList from server:', comList);
-    const buttonContainer = document.getElementById('buttonContainer');
-    // Clear existing buttons
-    buttonContainer.innerHTML = '';
-    // Loop through the list of communities
-    comList.forEach((value) => {
-      // Create a button element for each community
-      const button = document.createElement('input');
-      // Set the button text to the value
-      button.type = 'submit';
-      button.value = value.name;
-      button.dataset.communityId = value.id;
-      button.addEventListener('click', () => {
-        // Remove 'selected' class from all buttons
-        document.querySelectorAll('.buttonContainer input').forEach(btn => {
-          btn.classList.remove('selected');
-        });
-        const communityId = button.dataset.communityId;
-        getThreads(communityId);
-        // Add 'selected' class to the clicked button
-        button.classList.add('selected');
-      });
-      // Append the button to the button container
-      buttonContainer.appendChild(button);
-    });
-  });
-
-  const area = document.getElementById('Area');
-  // Function to handle 'threads' event
-  socket.on('threads', (threads) => {
-    // Display threads in the Area div
-    area.innerHTML = '';
-    threads.forEach(thread => {
-      const threadDiv = document.createElement('div');
-      threadDiv.classList.add('thread');
-      threadDiv.style.backgroundColor = 'red';
-      // Create a span for the thread title
-      const titleSpan = document.createElement('span');
-      titleSpan.textContent = thread.Title;
-      tiId=thread.threadId
-      threadDiv.appendChild(titleSpan);
-
-      // Create the message area for this thread
-      const messageArea = document.createElement('div');
-      messageArea.classList.add('message-area');
-      threadDiv.appendChild(messageArea);
-
-      // Create a button for replying
-      const replyButton = document.createElement('button');
-      replyButton.textContent = 'Reply';
-      replyButton.classList.add('reply-button');
-      replyButton.addEventListener('click', () => {
-        // Toggle display of message form inside the thread
-        const messageForm = threadDiv.querySelector('.message-form');
-        if (messageForm.style.display === 'block') {
-          messageForm.style.display = 'none';
-          activeThread = null; // No active thread
-        } else {
-          // Disable forms in other threads
-          document.querySelectorAll('.message-form').forEach(form => {
-            form.style.display = 'none';
-          });
-          // Enable form in current thread
-          messageForm.style.display = 'block';
-          activeThread = threadDiv;
-          tid = activeThread.tiId
-        }
-      });
-      threadDiv.appendChild(replyButton);
-
-      // Append the message form inside the thread div
-      const messageForm = document.createElement('form');
-      messageForm.classList.add('message-form');
-      messageForm.style.display = 'none'; // Initially hide the form
-      messageForm.innerHTML = `
-        <input type="text" id="messageInput" placeholder="Type your message...">
-        <button type="submit">Send</button>
-      `;
-      messageForm.addEventListener('submit', (event) => {
-        event.preventDefault();
-        const message = messageForm.querySelector('#messageInput').value.trim();
-        if (message !== '') {
-          // Emit 'message' event to server with message and username
-          socket.emit('message', { username: getUsername(), message });
-
-          // Clear input field
-          messageForm.querySelector('#messageInput').value = '';
-        }
-      });
-      threadDiv.appendChild(messageForm);
-
-      // Append the threadDiv to the Area
-      area.appendChild(threadDiv);
-    });
-  });
-
-  // Function to send 'getThreads' event to server with community name
-  function getThreads(communityId) {
-    area.innerHTML = '';
-    socket.emit('getThreads', { communityId });
-  }    
-
-  // Function to get username from local storage or prompt user to enter username
-  function getUsername() {
-    let username = localStorage.getItem('username');
-    if (!username) {
-      username = prompt('Enter your username:');
-      localStorage.setItem('username', username);
-    }
-    return username;
-  }
-
-  // Emit 'getCom' event to server to request the list of communities
-  document.addEventListener('DOMContentLoaded', () => {
-    socket.emit('getCom');
-  });
-
-</script>
-
+    <!-- Include Socket.IO library -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.1/socket.io.js"></script>
+    <script>
+      // Establish WebSocket connection with server
+      const socket = io();
+      const messageArea = document.getElementById('messageArea');
+      const messageFormInner = document.getElementById('messageFormInner');
+      const messageInput = document.getElementById('messageInput');
+      let activeThreadId = null;
   
-</div>
+      // Function to handle receiving 'comList' event from server
+      socket.on('comList', (comList) => {
+          console.log('Received comList from server:', comList);
+          const buttonContainer = document.getElementById('buttonContainer');
+          buttonContainer.innerHTML = ''; // Clear existing buttons
+          comList.forEach((value) => {
+              const button = document.createElement('input');
+              button.type = 'submit';
+              button.value = value.name;
+              button.dataset.communityId = value.id;
+              button.addEventListener('click', () => {
+                  document.querySelectorAll('.buttonContainer input').forEach(btn => {
+                      btn.classList.remove('selected');
+                  });
+                  const communityId = button.dataset.communityId;
+                  getThreads(communityId);
+                  button.classList.add('selected');
+              });
+              buttonContainer.appendChild(button);
+          });
+      });
+  
+      const area = document.getElementById('Area');
+  
+      // Function to handle 'threads' event
+      socket.on('threads', (threads) => {
+          console.log(threads);
+          area.innerHTML = ''; // Clear the area
+          threads.forEach(thread => {
+              const threadDiv = document.createElement('div');
+              threadDiv.classList.add('thread');
+              threadDiv.dataset.threadId = thread.thread_id;
+  
+              const titleSpan = document.createElement('span');
+              titleSpan.textContent = thread.Title;
+              threadDiv.appendChild(titleSpan);
+  
+              const messageArea = document.createElement('div');
+              messageArea.classList.add('message-area');
+              threadDiv.appendChild(messageArea);
+  
+              const replyButton = document.createElement('button');
+              replyButton.textContent = 'Reply';
+              replyButton.classList.add('reply-button');
+              replyButton.addEventListener('click', () => {
+                  const messageForm = threadDiv.querySelector('.message-form');
+                  if (messageForm.style.display === 'block') {
+                      messageForm.style.display = 'none';
+                      activeThreadId = null;
+                  } else {
+                      document.querySelectorAll('.message-form').forEach(form => {
+                          form.style.display = 'none';
+                      });
+                      messageForm.style.display = 'block';
+                      activeThreadId = thread.thread_id;
+                  }
+              });
+              threadDiv.appendChild(replyButton);
+  
+              const messageForm = document.createElement('form');
+              messageForm.classList.add('message-form');
+              messageForm.style.display = 'none'; // Initially hide the form
+              messageForm.innerHTML = `
+                  <input type="text" placeholder="Type your message...">
+                  <button type="submit">Send</button>
+              `;
+              messageForm.addEventListener('submit', (event) => {
+                  event.preventDefault();
+                  const message = messageForm.querySelector('input').value.trim();
+                  if (message !== '') {
+                      socket.emit('message', { username: getUsername(), message, threadId: activeThreadId });
+                      messageForm.querySelector('input').value = ''; // Clear input field
+                  }
+              });
+              threadDiv.appendChild(messageForm);
+  
+              area.appendChild(threadDiv);
+          });
+      });
+  
+      // Function to handle 'message' event - Display incoming messages in the appropriate thread's message area
+      socket.on('message', (messageData) => {
+          const { threadId, message } = messageData;
+          const messageArea = document.querySelector(`.thread[data-thread-id="${threadId}"] .message-area`);
+          const messageDiv = document.createElement('div');
+          messageDiv.textContent = message;
+          messageArea.appendChild(messageDiv);
+      });
+  
+      // Function to send 'getThreads' event to server with community ID
+      function getThreads(communityId) {
+          area.innerHTML = ''; // Clear the area
+          socket.emit('getThreads', { communityId });
+      }
+  
+      // Function to get username from local storage or prompt user to enter username
+      function getUsername() {
+          let username = localStorage.getItem('username');
+          if (!username) {
+              username = prompt('Enter your username:');
+              localStorage.setItem('username', username);
+          }
+          return username;
+      }
+  
+      // Emit 'getCom' event to server to request the list of communities
+      document.addEventListener('DOMContentLoaded', () => {
+          socket.emit('getCom');
+      });
+  </script>
+  </div>
 </body>
 </html>
