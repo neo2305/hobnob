@@ -12,7 +12,7 @@
         }
 
         #messageForm {
-            position: relative;
+            position: absolute;
             bottom: 3%;
             display: flex;
             align-items: center;
@@ -57,6 +57,7 @@
             color: black;
         }
         #messageArea {
+            display: none;
             top: 10%;
             border: #ffffff;
             border-width: 2px;
@@ -64,6 +65,7 @@
             height: 86%;
             width: 95%;
             color: white;
+            overflow-y: scroll;
             font-family: 'Comic Sans MS', cursive, sans-serif; 
         }
         #Area input[type='submit'] {
@@ -118,7 +120,7 @@
             right: 0px;
             width: 70%;
             padding-left: 12px;
-            overflow-y:scroll;
+            overflow-y:auto;
         }
 
         .buttonContainer input {
@@ -218,12 +220,16 @@
             }
         });
 
-        socket.on('newMessage', (message) => {
-            // Append the new message to the message area
-            const messageDiv = document.createElement('div');
-            messageDiv.textContent = `${message.username}: ${message.message}`;
+        socket.on('newMessage', (message11) => {
+        console.log('New message received:', message11);
+        const messageDiv = document.createElement('div');
+        const formId = `messageForm_${message11[2]}`;
+        if (document.getElementById(formId)) {
+            messageDiv.textContent = `${message11[0]}: ${message11[1]}`;
             messageArea.appendChild(messageDiv);
-        });
+            scrollToBottom(); // Scroll to bottom
+        }
+    });
 
         socket.on('threadMessages', ({ messages }) => {
             // Clear previous messages
@@ -235,6 +241,7 @@
                 messageDiv.textContent = `${message.user}: ${message.text}`;
                 messageArea.appendChild(messageDiv);
             });
+            scrollToBottom(); // Scroll to bottom
         });
 
           socket.on('comList', (comList) => {
@@ -251,6 +258,8 @@
                       const communityId = button.dataset.communityId;
                       getThreads(communityId);
                       button.classList.add('selected');
+                      area.style.display='block'
+                      messageArea.style.display='none'
                   });
                   buttonContainer.appendChild(button);
               });
@@ -266,11 +275,12 @@
                   threadButton.value = thread.Title;
                   threadButton.dataset.threadId = thread.thread_id; 
                   threadButton.addEventListener('click', () => {
-                     area.innerHTML=''
                       const threadId = threadButton.dataset.threadId;
                       selectedThreadIdInput.value = threadId; // Set the selected thread ID
+                      messageArea.style.display='block'
                       renderMessageForm(threadId); // Create and render message form
                       getMessages(threadId);
+                      area.style.display = 'none';
                   });
                   area.appendChild(threadButton);
               });
@@ -309,7 +319,10 @@
                   messageFormsContainer.innerHTML = ''; // Remove message form
                   messageArea.innerHTML = ''; // Clear previous messages
                   backButton.style.display = 'none'; // Hide back button
-              });
+                  messageArea.style.display='none';
+                  area.style.display = 'block';
+                  getThreads(comId); 
+                });
           }
 
           function getThreads(communityId) {
@@ -330,6 +343,9 @@
               socket.emit('getCom');
           });
 
+          function scrollToBottom() {
+            messageArea.scrollTop = messageArea.scrollHeight;
+        }
           function getMessages(threadId) {
               messageArea.innerHTML = ''; // Clear previous messages
               // Emit 'getMessages' event to server with the thread ID

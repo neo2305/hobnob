@@ -36,9 +36,10 @@ socket.on('message', async (data) => {
       
       // Save the message to the database
       const savedMessage = await db.createMessage(username, message, threadId);
-
+      sentdata = [username,message,threadId]
       // Broadcast the message to all clients
-      io.emit('newMessage', savedMessage);
+      console.log(sentdata)
+      io.emit('newMessage', sentdata);
   } catch (error) {
       console.error('Error saving message:', error);
   }
