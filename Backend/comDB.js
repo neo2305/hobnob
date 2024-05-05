@@ -33,10 +33,21 @@ async function getcom(){
     }));
     return communityData;
 }
+async function getComByName(comName){
+    const comms = await Communitites.find({Community_name: comName}, 'Community_name Community_id');
+    const communityData = comms.map(community => ({
+        name: community.Community_name,
+        id: community.Community_id
+    }));
+    console.log(communityData)
+    return communityData;
+}
 
-getcom();
+// getComByName('Community 1')
+// getcom();
 module.exports={
     createcom : createcom,
-    getcom : getcom
+    getcom : getcom,
+    getComByName : getComByName
 }
     
